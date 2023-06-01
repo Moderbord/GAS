@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Character/Abilites/AttributeSets/CharacterAttributeSetBase.h"
+#include "Character/Abilities/AttributeSets/CharacterAttributeSetBase.h"
 #include "Net/UnrealNetwork.h"
 
 void UCharacterAttributeSetBase::OnRep_Level(const FGameplayAttributeData& OldLevel)
