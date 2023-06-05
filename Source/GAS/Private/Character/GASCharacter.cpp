@@ -14,10 +14,12 @@
 //////////////////////////////////////////////////////////////////////////
 // AGASCharacter
 
-AGASCharacter::AGASCharacter()
+AGASCharacter::AGASCharacter(const class FObjectInitializer& ObjectInitializer) : 
+	Super(ObjectInitializer.SetDefaultSubobjectClass<UCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Overlap);
 		
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
@@ -49,6 +51,19 @@ AGASCharacter::AGASCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+	DeadTag = FGameplayTag::RequestGameplayTag(FName("State.Dead"));
+	EffectRemoveOnDeathTag = FGameplayTag::RequestGameplayTag(FName("State.RemoveOnDeath"));
+}
+
+bool AGASCharacter::IsAlive() const
+{
+	return GetHealth() > 0.f;
+}
+
+int32 AGASCharacter::GetAbilityLevel(GASAbilityID AbilityID) const
+{
+	return 1;
 }
 
 void AGASCharacter::BeginPlay()
@@ -86,6 +101,201 @@ void AGASCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInput
 
 	}
 
+}
+
+void AGASCharacter::RemoveCharacterAbilities()
+{
+	// Need to have rights, valid components, and abilities to remove
+	if (GetLocalRole() != ROLE_Authority || !AbilitySystemComponent.IsValid() || !AbilitySystemComponent->CharacterAbilitesGiven)
+	{
+		return;
+	}
+
+	TArray<FGameplayAbilitySpecHandle> AbilitiesToRemove;
+	for (const FGameplayAbilitySpec& Spec : AbilitySystemComponent->GetActivatableAbilities())
+	{
+		if ((Spec.SourceObject == this) && CharacterAbilities.Contains(Spec.Ability->GetClass()))
+		{
+			AbilitiesToRemove.Add(Spec.Handle);
+		}
+	}
+
+	for (int32 i = 0; i < AbilitiesToRemove.Num(); ++i)
+	{
+		AbilitySystemComponent->ClearAbility(AbilitiesToRemove[i]);
+	}
+
+	AbilitySystemComponent->CharacterAbilitesGiven = false;
+}
+
+void AGASCharacter::Die()
+{
+	RemoveCharacterAbilities();
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCharacterMovement()->GravityScale = 0.f;
+	GetCharacterMovement()->Velocity = FVector(0.f);
+
+	OnCharacterDied.Broadcast(this);
+
+	if (AbilitySystemComponent.IsValid())
+	{
+		AbilitySystemComponent->CancelAbilities();
+
+		FGameplayTagContainer EffectTagsToRemove;
+		EffectTagsToRemove.AddTag(EffectRemoveOnDeathTag);
+		int32 NumEffectsRemoved = AbilitySystemComponent->RemoveActiveEffectsWithTags(EffectTagsToRemove);
+		// Not replicated
+		AbilitySystemComponent->AddLooseGameplayTag(DeadTag);
+	}
+
+	if (DeathMontage)
+	{
+		PlayAnimMontage(DeathMontage);
+	}
+	else
+	{
+		FinishDying();
+	}
+
+}
+
+void AGASCharacter::FinishDying()
+{	
+	Destroy();
+}
+
+int32 AGASCharacter::GetCharacterLevel() const
+{
+	if (AttributeSetBase.IsValid())
+	{
+		return AttributeSetBase->GetLevel();
+	}
+
+	return 0;
+}
+
+float AGASCharacter::GetHealth() const
+{
+	if (AttributeSetBase.IsValid())
+	{
+		return AttributeSetBase->GetHealth();
+	}
+
+	return 0.0f;
+}
+
+float AGASCharacter::GetMaxHealth() const
+{
+	if (AttributeSetBase.IsValid())
+	{
+		return AttributeSetBase->GetMaxHealth();
+	}
+
+	return 0.0f;
+}
+
+float AGASCharacter::GetMana() const
+{
+	if (AttributeSetBase.IsValid())
+	{
+		return AttributeSetBase->GetMana();
+	}
+
+	return 0.0f;
+}
+
+float AGASCharacter::GetMaxMana() const
+{
+	if (AttributeSetBase.IsValid())
+	{
+		return AttributeSetBase->GetMaxMana();
+	}
+
+	return 0.0f;
+}
+
+UAbilitySystemComponent* AGASCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent.Get();
+}
+
+void AGASCharacter::AddCharacterAbilites()
+{
+	// Need to have rights, valid components, and not already given abilities
+	if (GetLocalRole() != ROLE_Authority || !AbilitySystemComponent.IsValid() || AbilitySystemComponent->CharacterAbilitesGiven)
+	{
+		return;
+	}
+
+	for (TSubclassOf<UCharacterGameplayAbility>& StartupAbility : CharacterAbilities)
+	{
+		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, GetAbilityLevel(StartupAbility.GetDefaultObject()->AbilityID), static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
+	}
+
+	AbilitySystemComponent->CharacterAbilitesGiven = true;
+}
+
+void AGASCharacter::InitializeAttributes()
+{
+	if (!AbilitySystemComponent.IsValid())
+	{
+		return;
+	}
+
+	if (!DefaultAttributes)
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s() Missing DefaultAttributes for %s. Please fill in the character's Blueprint."), *FString(__FUNCTION__), *GetName());
+		return;
+	}
+
+	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+	EffectContext.AddSourceObject(this);
+
+	FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributes, GetCharacterLevel(), EffectContext);
+	if (NewHandle.IsValid())
+	{ 
+		FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent.Get());
+	}
+}
+
+void AGASCharacter::AddStartupEffets()
+{
+	// Need to have rights, valid components, and not already given abilities
+	if (GetLocalRole() != ROLE_Authority || !AbilitySystemComponent.IsValid() || AbilitySystemComponent->CharacterAbilitesGiven)
+	{
+		return;
+	}
+
+	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+	EffectContext.AddSourceObject(this);
+
+	for (TSubclassOf<UGameplayEffect> GameplayEffect : StartupEffects)
+	{
+		FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(GameplayEffect, GetCharacterLevel(), EffectContext);
+		if (NewHandle.IsValid())
+		{
+			FActiveGameplayEffectHandle ActiveEGHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent.Get());
+		}
+	}
+
+	AbilitySystemComponent->StartupEffectsApplied = true;
+}
+
+void AGASCharacter::SetHealth(float Health)
+{
+	if (AttributeSetBase.IsValid())
+	{
+		AttributeSetBase->SetHealth(Health);
+	}
+}
+
+void AGASCharacter::SetMana(float Mana)
+{
+	if (AttributeSetBase.IsValid())
+	{
+		AttributeSetBase->SetMana(Mana);
+	}
 }
 
 void AGASCharacter::Move(const FInputActionValue& Value)
