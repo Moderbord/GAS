@@ -11,17 +11,17 @@
 #include "Abilities/CharacterAbilitySystemComponent.h"
 #include "Abilities/AttributeSets/CharacterAttributeSetBase.h"
 #include "Abilities/CharacterGameplayAbility.h"
-#include "GASCharacter.generated.h"
+#include "GASCharacterBase.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterDiedDelegate, AGASCharacter*, character);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterDiedDelegate, AGASCharacterBase*, character);
 
 UCLASS(config=Game)
-class AGASCharacter : public ACharacter, public IAbilitySystemInterface
+class AGASCharacterBase : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 public:
-	AGASCharacter(const class FObjectInitializer& ObjectInitializer);
+	AGASCharacterBase(const class FObjectInitializer& ObjectInitializer);
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Character")
 	FCharacterDiedDelegate OnCharacterDied;

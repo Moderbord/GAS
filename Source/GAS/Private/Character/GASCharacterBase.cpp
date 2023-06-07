@@ -1,6 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "Character/GASCharacter.h"
+#include "Character/GASCharacterBase.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
@@ -12,9 +12,9 @@
 
 
 //////////////////////////////////////////////////////////////////////////
-// AGASCharacter
+// AGASCharacterBase
 
-AGASCharacter::AGASCharacter(const class FObjectInitializer& ObjectInitializer) : 
+AGASCharacterBase::AGASCharacterBase(const class FObjectInitializer& ObjectInitializer) : 
 	Super(ObjectInitializer.SetDefaultSubobjectClass<UCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
 	// Set size for collision capsule
@@ -56,17 +56,17 @@ AGASCharacter::AGASCharacter(const class FObjectInitializer& ObjectInitializer) 
 	EffectRemoveOnDeathTag = FGameplayTag::RequestGameplayTag(FName("State.RemoveOnDeath"));
 }
 
-bool AGASCharacter::IsAlive() const
+bool AGASCharacterBase::IsAlive() const
 {
 	return GetHealth() > 0.f;
 }
 
-int32 AGASCharacter::GetAbilityLevel(GASAbilityID AbilityID) const
+int32 AGASCharacterBase::GetAbilityLevel(GASAbilityID AbilityID) const
 {
 	return 1;
 }
 
-void AGASCharacter::BeginPlay()
+void AGASCharacterBase::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
@@ -84,7 +84,7 @@ void AGASCharacter::BeginPlay()
 //////////////////////////////////////////////////////////////////////////
 // Input
 
-void AGASCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
+void AGASCharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
@@ -94,16 +94,16 @@ void AGASCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInput
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		//Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AGASCharacter::Move);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AGASCharacterBase::Move);
 
 		//Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AGASCharacter::Look);
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AGASCharacterBase::Look);
 
 	}
 
 }
 
-void AGASCharacter::RemoveCharacterAbilities()
+void AGASCharacterBase::RemoveCharacterAbilities()
 {
 	// Need to have rights, valid components, and abilities to remove
 	if (GetLocalRole() != ROLE_Authority || !AbilitySystemComponent.IsValid() || !AbilitySystemComponent->CharacterAbilitesGiven)
@@ -128,7 +128,7 @@ void AGASCharacter::RemoveCharacterAbilities()
 	AbilitySystemComponent->CharacterAbilitesGiven = false;
 }
 
-void AGASCharacter::Die()
+void AGASCharacterBase::Die()
 {
 	RemoveCharacterAbilities();
 
@@ -160,12 +160,12 @@ void AGASCharacter::Die()
 
 }
 
-void AGASCharacter::FinishDying()
+void AGASCharacterBase::FinishDying()
 {	
 	Destroy();
 }
 
-int32 AGASCharacter::GetCharacterLevel() const
+int32 AGASCharacterBase::GetCharacterLevel() const
 {
 	if (AttributeSetBase.IsValid())
 	{
@@ -175,7 +175,7 @@ int32 AGASCharacter::GetCharacterLevel() const
 	return 0;
 }
 
-float AGASCharacter::GetHealth() const
+float AGASCharacterBase::GetHealth() const
 {
 	if (AttributeSetBase.IsValid())
 	{
@@ -185,7 +185,7 @@ float AGASCharacter::GetHealth() const
 	return 0.0f;
 }
 
-float AGASCharacter::GetMaxHealth() const
+float AGASCharacterBase::GetMaxHealth() const
 {
 	if (AttributeSetBase.IsValid())
 	{
@@ -195,7 +195,7 @@ float AGASCharacter::GetMaxHealth() const
 	return 0.0f;
 }
 
-float AGASCharacter::GetMana() const
+float AGASCharacterBase::GetMana() const
 {
 	if (AttributeSetBase.IsValid())
 	{
@@ -205,7 +205,7 @@ float AGASCharacter::GetMana() const
 	return 0.0f;
 }
 
-float AGASCharacter::GetMaxMana() const
+float AGASCharacterBase::GetMaxMana() const
 {
 	if (AttributeSetBase.IsValid())
 	{
@@ -215,12 +215,12 @@ float AGASCharacter::GetMaxMana() const
 	return 0.0f;
 }
 
-UAbilitySystemComponent* AGASCharacter::GetAbilitySystemComponent() const
+UAbilitySystemComponent* AGASCharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent.Get();
 }
 
-void AGASCharacter::AddCharacterAbilites()
+void AGASCharacterBase::AddCharacterAbilites()
 {
 	// Need to have rights, valid components, and not already given abilities
 	if (GetLocalRole() != ROLE_Authority || !AbilitySystemComponent.IsValid() || AbilitySystemComponent->CharacterAbilitesGiven)
@@ -236,7 +236,7 @@ void AGASCharacter::AddCharacterAbilites()
 	AbilitySystemComponent->CharacterAbilitesGiven = true;
 }
 
-void AGASCharacter::InitializeAttributes()
+void AGASCharacterBase::InitializeAttributes()
 {
 	if (!AbilitySystemComponent.IsValid())
 	{
@@ -259,7 +259,7 @@ void AGASCharacter::InitializeAttributes()
 	}
 }
 
-void AGASCharacter::AddStartupEffets()
+void AGASCharacterBase::AddStartupEffets()
 {
 	// Need to have rights, valid components, and not already given abilities
 	if (GetLocalRole() != ROLE_Authority || !AbilitySystemComponent.IsValid() || AbilitySystemComponent->CharacterAbilitesGiven)
@@ -282,7 +282,7 @@ void AGASCharacter::AddStartupEffets()
 	AbilitySystemComponent->StartupEffectsApplied = true;
 }
 
-void AGASCharacter::SetHealth(float Health)
+void AGASCharacterBase::SetHealth(float Health)
 {
 	if (AttributeSetBase.IsValid())
 	{
@@ -290,7 +290,7 @@ void AGASCharacter::SetHealth(float Health)
 	}
 }
 
-void AGASCharacter::SetMana(float Mana)
+void AGASCharacterBase::SetMana(float Mana)
 {
 	if (AttributeSetBase.IsValid())
 	{
@@ -298,7 +298,7 @@ void AGASCharacter::SetMana(float Mana)
 	}
 }
 
-void AGASCharacter::Move(const FInputActionValue& Value)
+void AGASCharacterBase::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
@@ -321,7 +321,7 @@ void AGASCharacter::Move(const FInputActionValue& Value)
 	}
 }
 
-void AGASCharacter::Look(const FInputActionValue& Value)
+void AGASCharacterBase::Look(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
