@@ -8,9 +8,9 @@ void AGASPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	AGASPlayerState* PlayerState = GetPlayerState<AGASPlayerState>();
-	if (PlayerState)
+	AGASPlayerState* PS = GetPlayerState<AGASPlayerState>();
+	if (PS)
 	{
-		PlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(PlayerState, InPawn);
+		PS->GetAbilitySystemComponent()->InitAbilityActorInfo(PS, InPawn);
 	}
 }
