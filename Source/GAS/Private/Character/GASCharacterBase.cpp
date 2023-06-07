@@ -192,10 +192,10 @@ void AGASCharacterBase::InitializeAttributes()
 	}
 }
 
-void AGASCharacterBase::AddStartupEffets()
+void AGASCharacterBase::AddStartupEffects()
 {
 	// Need to have rights, valid components, and not already given abilities
-	if (GetLocalRole() != ROLE_Authority || !AbilitySystemComponent.IsValid() || AbilitySystemComponent->CharacterAbilitesGiven)
+	if (GetLocalRole() != ROLE_Authority || !AbilitySystemComponent.IsValid() || AbilitySystemComponent->StartupEffectsApplied)
 	{
 		return;
 	}

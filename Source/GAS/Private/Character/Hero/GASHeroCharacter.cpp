@@ -106,7 +106,7 @@ void AGASHeroCharacter::PossessedBy(AController* NewController)
 		// End respawn specific things
 
 		AddCharacterAbilites();
-		AddStartupEffets();
+		AddStartupEffects();
 	}
 }
 
