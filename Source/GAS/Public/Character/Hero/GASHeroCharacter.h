@@ -39,8 +39,6 @@ protected:
 
 	virtual void OnRep_PlayerState() override;
 
-	void InitializeStartingValues(class AGASPlayerState* PS);
-
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
