@@ -34,6 +34,8 @@ int32 AGASCharacterBase::GetAbilityLevel(GASAbilityID AbilityID) const
 void AGASCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GetAbilitySystemComponent()->OnActiveGameplayEffectAddedDelegateToSelf.AddUObject(this, &AGASCharacterBase::OnActiveGameplayEffectAddedCallback);
 }
 
 void AGASCharacterBase::RemoveCharacterAbilities()
@@ -151,6 +153,11 @@ float AGASCharacterBase::GetMaxMana() const
 UAbilitySystemComponent* AGASCharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent.Get();
+}
+
+void AGASCharacterBase::OnActiveGameplayEffectAddedCallback(UAbilitySystemComponent* Target, const FGameplayEffectSpec& SpecApplied, FActiveGameplayEffectHandle ActiveHandle)
+{	
+	UE_LOG(LogTemp, Warning, TEXT("GE Added: %s"), *SpecApplied.ToSimpleString());
 }
 
 void AGASCharacterBase::AddCharacterAbilites()

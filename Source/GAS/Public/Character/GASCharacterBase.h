@@ -58,6 +58,8 @@ public:
 
 	// Implemented IAbilitySystemInterface
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	
+	virtual void OnActiveGameplayEffectAddedCallback(class UAbilitySystemComponent* Target, const struct FGameplayEffectSpec& SpecApplied, struct FActiveGameplayEffectHandle ActiveHandle);
 
 protected:
 
