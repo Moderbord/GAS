@@ -107,6 +107,8 @@ void AGASHeroCharacter::PossessedBy(AController* NewController)
 
 		AddCharacterAbilites();
 		AddStartupEffects();
+
+		PS->GetAbilitySystemComponent()->OnActiveGameplayEffectAddedDelegateToSelf.AddUObject(this, &AGASHeroCharacter::OnActiveGameplayEffectAddedCallback);
 	}
 }
 

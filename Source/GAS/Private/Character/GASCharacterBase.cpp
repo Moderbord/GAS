@@ -34,8 +34,6 @@ int32 AGASCharacterBase::GetAbilityLevel(GASAbilityID AbilityID) const
 void AGASCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
-
-	GetAbilitySystemComponent()->OnActiveGameplayEffectAddedDelegateToSelf.AddUObject(this, &AGASCharacterBase::OnActiveGameplayEffectAddedCallback);
 }
 
 void AGASCharacterBase::RemoveCharacterAbilities()
