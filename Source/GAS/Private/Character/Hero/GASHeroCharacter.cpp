@@ -12,6 +12,7 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Player/GASPlayerState.h"
+#include "Components/EnhancedInputAbilityComponent.h"
 
 AGASHeroCharacter::AGASHeroCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -57,6 +58,7 @@ AGASHeroCharacter::AGASHeroCharacter(const FObjectInitializer& ObjectInitializer
 
 void AGASHeroCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
 
@@ -70,6 +72,13 @@ void AGASHeroCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AGASHeroCharacter::Look);
 
+		//Add reference to input component
+		AGASPlayerState* PS = GetPlayerState<AGASPlayerState>();
+		if (PS)
+		{
+			PS->GetAbilitySystemComponent()->SetEnhancedInputComponent(EnhancedInputComponent);
+		}
+	
 	}
 }
 
