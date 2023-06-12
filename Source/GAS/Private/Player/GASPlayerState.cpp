@@ -5,7 +5,7 @@
 
 AGASPlayerState::AGASPlayerState()
 {
-	AbilitySystemComponent = CreateDefaultSubobject<UCharacterAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	AbilitySystemComponent = CreateDefaultSubobject<UEnhancedInputAbilityComponent>(TEXT("AbilitySystemComponent"));
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
@@ -16,7 +16,7 @@ AGASPlayerState::AGASPlayerState()
 	DeadTag = FGameplayTag::RequestGameplayTag(FName("State.Dead"));
 }
 
-UCharacterAbilitySystemComponent* AGASPlayerState::GetAbilitySystemComponent() const
+UEnhancedInputAbilityComponent* AGASPlayerState::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
 }
@@ -84,7 +84,7 @@ void AGASPlayerState::CharacterLevelChanged(const FOnAttributeChangeData& Data)
 
 void AGASPlayerState::HealthChanged(const FOnAttributeChangeData& Data)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Health Changed"));
+	UE_LOG(LogTemp, Warning, TEXT("Health Changed OLD: %f, NEW: %f"), Data.OldValue, Data.NewValue);
 }
 
 void AGASPlayerState::MaxHealthChanged(const FOnAttributeChangeData& Data)

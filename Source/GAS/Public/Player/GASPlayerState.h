@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
 #include "AbilitySystemInterface.h"
-#include "Character/Abilities/CharacterAbilitySystemComponent.h"
+#include "Components/EnhancedInputAbilityComponent.h"
 #include "Character/Abilities/AttributeSets/CharacterAttributeSetBase.h"
 #include "GASPlayerState.generated.h"
 
@@ -20,7 +20,7 @@ class GAS_API AGASPlayerState : public APlayerState, public IAbilitySystemInterf
 public:
 	AGASPlayerState();
 
-	class UCharacterAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	class UEnhancedInputAbilityComponent* GetAbilitySystemComponent() const override;
 
 	class UCharacterAttributeSetBase* GetAttributeSetBase() const;
 
@@ -48,7 +48,7 @@ public:
 protected:
 
 	UPROPERTY()
-	class UCharacterAbilitySystemComponent* AbilitySystemComponent;
+	class UEnhancedInputAbilityComponent* AbilitySystemComponent;
 	
 	UPROPERTY()
 	class UCharacterAttributeSetBase* AttributeSetBase;
