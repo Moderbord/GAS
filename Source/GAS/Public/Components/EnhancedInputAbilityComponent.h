@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "GameplayAbilitySpec.h"
 #include "EnhancedInputComponent.h"
+#include "Character/Abilities/CharacterAbilitySystemComponent.h"
 #include "EnhancedInputAbilityComponent.generated.h"
 
 class UInputAction;
@@ -25,7 +26,7 @@ struct FAbilityInputBinding
  * 
  */
 UCLASS(Blueprintable, BlueprintType, Category = "AbilityInput", meta = (BlueprintSpawnableComponent))
-class GAS_API UEnhancedInputAbilityComponent : public UAbilitySystemComponent
+class GAS_API UEnhancedInputAbilityComponent : public UCharacterAbilitySystemComponent
 {
 	GENERATED_BODY()
 
