@@ -40,6 +40,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Enhanced Input Abilities")
 	void ClearAbilityBindings(UInputAction* InputAction);
 
+	void SetEnhancedInputComponent(UEnhancedInputComponent* InputComponent);
+
 private:
 	void OnAbilityInputPressed(UInputAction* InputAction);
 
@@ -57,6 +59,6 @@ private:
 	TMap<UInputAction*, FAbilityInputBinding> MappedAbilities;
 
 	UPROPERTY(transient)
-	UEnhancedInputComponent* InputComponent;
+	UEnhancedInputComponent* ActorInputComponent;
 
 };

@@ -94,6 +94,11 @@ void UEnhancedInputAbilityComponent::ClearAbilityBindings(UInputAction* InputAct
 	RemoveEntry(InputAction);
 }
 
+void UEnhancedInputAbilityComponent::SetEnhancedInputComponent(UEnhancedInputComponent* InputComponent)
+{
+	ActorInputComponent = InputComponent;
+}
+
 void UEnhancedInputAbilityComponent::OnAbilityInputPressed(UInputAction* InputAction)
 {
 	using namespace EnhancedInputAbilityComponent;
@@ -120,10 +125,10 @@ void UEnhancedInputAbilityComponent::RemoveEntry(UInputAction* InputAction)
 {
 	if (FAbilityInputBinding* Bindings = MappedAbilities.Find(InputAction))
 	{
-		if (InputComponent)
+		if (ActorInputComponent)
 		{
-			InputComponent->RemoveBindingByHandle(Bindings->OnPressedHandle);
-			InputComponent->RemoveBindingByHandle(Bindings->OnReleasedHandle);
+			ActorInputComponent->RemoveBindingByHandle(Bindings->OnPressedHandle);
+			ActorInputComponent->RemoveBindingByHandle(Bindings->OnReleasedHandle);
 		}
 
 		for (FGameplayAbilitySpecHandle AbilityHandle : Bindings->BoundAbilitiesStack)
@@ -143,18 +148,18 @@ void UEnhancedInputAbilityComponent::RemoveEntry(UInputAction* InputAction)
 
 void UEnhancedInputAbilityComponent::TryBindAbilityInput(UInputAction* InputAction, FAbilityInputBinding& AbilityInputBinding)
 {
-	if (InputComponent)
+	if (ActorInputComponent)
 	{
 		// Pressed event
 		if (AbilityInputBinding.OnPressedHandle == 0)
 		{
-			AbilityInputBinding.OnPressedHandle = InputComponent->BindAction(InputAction, ETriggerEvent::Started, this, &UEnhancedInputAbilityComponent::OnAbilityInputPressed, InputAction).GetHandle();
+			AbilityInputBinding.OnPressedHandle = ActorInputComponent->BindAction(InputAction, ETriggerEvent::Started, this, &UEnhancedInputAbilityComponent::OnAbilityInputPressed, InputAction).GetHandle();
 		}
 
 		// Released event
 		if (AbilityInputBinding.OnReleasedHandle == 0)
 		{
-			AbilityInputBinding.OnReleasedHandle = InputComponent->BindAction(InputAction, ETriggerEvent::Completed, this, &UEnhancedInputAbilityComponent::OnAbilityInputReleased, InputAction).GetHandle();
+			AbilityInputBinding.OnReleasedHandle = ActorInputComponent->BindAction(InputAction, ETriggerEvent::Completed, this, &UEnhancedInputAbilityComponent::OnAbilityInputReleased, InputAction).GetHandle();
 		}
 	}
 }
@@ -169,8 +174,4 @@ FGameplayAbilitySpec* UEnhancedInputAbilityComponent::FindAbilitySpec(FGameplayA
 void UEnhancedInputAbilityComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	AActor* Owner = GetOwner();
-	if (IsValid(Owner) && Owner->InputComponent) {
-		InputComponent = CastChecked<UEnhancedInputComponent>(Owner->InputComponent);
-	}
 }
