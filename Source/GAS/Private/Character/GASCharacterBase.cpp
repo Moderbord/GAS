@@ -26,7 +26,7 @@ bool AGASCharacterBase::IsAlive() const
 	return GetHealth() > 0.f;
 }
 
-int32 AGASCharacterBase::GetAbilityLevel(GASAbilityID AbilityID) const
+int32 AGASCharacterBase::GetAbilityLevel() const
 {
 	return 1;
 }
@@ -168,7 +168,7 @@ void AGASCharacterBase::AddCharacterAbilites()
 
 	for (TSubclassOf<UCharacterGameplayAbility>& StartupAbility : CharacterAbilities)
 	{
-		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, GetAbilityLevel(StartupAbility.GetDefaultObject()->AbilityID), static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
+		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, GetAbilityLevel(), 0.f, this));
 	}
 
 	AbilitySystemComponent->CharacterAbilitesGiven = true;

@@ -17,12 +17,6 @@ class GAS_API UCharacterGameplayAbility : public UGameplayAbility
 
 public:
 	UCharacterGameplayAbility();
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Ability")
-	GASAbilityID AbilityID = GASAbilityID::None;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Ability")
-	GASAbilityID AbilityInputID = GASAbilityID::None;
 	
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Ability")
 	bool ActivateAbilityOnGranted = false;

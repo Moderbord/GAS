@@ -6,7 +6,6 @@
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
 #include "GameplayTagContainer.h"
-#include "GAS/GAS.h"
 #include "GASCharacterBase.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterDiedDelegate, AGASCharacterBase*, character);
@@ -26,7 +25,7 @@ public:
 	virtual bool IsAlive() const;
 
 	UFUNCTION(BlueprintCallable, Category = "GAS|Character")
-	virtual int32 GetAbilityLevel(GASAbilityID AbilityID) const;
+	virtual int32 GetAbilityLevel() const;
 
 	// Removes all CharacterAbilities. Can only be called by the Server. Removing on the Server will remove from Client too.
 	UFUNCTION(BlueprintCallable, Category = "GAS|Character")
