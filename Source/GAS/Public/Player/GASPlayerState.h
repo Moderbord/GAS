@@ -32,6 +32,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Demo|GASPlayerState|Attributes")
 	float GetCharacterLevel() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Demo|GASPlayerState|Attributes")
+	float GetSpeed() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Demo|GASPlayerState|Attributes")
+	float GetMaxSpeed() const;
 	
 	UFUNCTION(BlueprintCallable, Category = "Demo|GASPlayerState|Attributes")
 	float GetHealth() const;
@@ -56,6 +62,8 @@ protected:
 	FGameplayTag DeadTag;
 
 	FDelegateHandle CharacterLevelChangedDelegateHandle;
+	FDelegateHandle SpeedChangedDelegateHandle;
+	FDelegateHandle MaxSpeedChangedDelegateHandle;
 	FDelegateHandle HealthChangedDelegateHandle;
 	FDelegateHandle MaxHealthChangedDelegateHandle;
 	FDelegateHandle ManaChangedDelegateHandle;
@@ -64,6 +72,8 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void CharacterLevelChanged(const FOnAttributeChangeData& Data);
+	virtual void SpeedChanged(const FOnAttributeChangeData& Data);
+	virtual void MaxSpeedChanged(const FOnAttributeChangeData& Data);
 	virtual void HealthChanged(const FOnAttributeChangeData& Data);
 	virtual void MaxHealthChanged(const FOnAttributeChangeData& Data);
 	virtual void ManaChanged(const FOnAttributeChangeData& Data);

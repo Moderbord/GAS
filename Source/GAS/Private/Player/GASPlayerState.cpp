@@ -41,6 +41,16 @@ float AGASPlayerState::GetCharacterLevel() const
 	return AttributeSetBase->GetLevel();
 }
 
+float AGASPlayerState::GetSpeed() const
+{
+	return AttributeSetBase->GetSpeed();
+}
+
+float AGASPlayerState::GetMaxSpeed() const
+{
+	return AttributeSetBase->GetMaxSpeed();
+}
+
 float AGASPlayerState::GetHealth() const
 {
 	return AttributeSetBase->GetHealth();
@@ -68,6 +78,8 @@ void AGASPlayerState::BeginPlay()
 	if (AbilitySystemComponent)
 	{
 		CharacterLevelChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSetBase->GetLevelAttribute()).AddUObject(this, &AGASPlayerState::CharacterLevelChanged);
+		SpeedChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSetBase->GetSpeedAttribute()).AddUObject(this, &AGASPlayerState::SpeedChanged);
+		MaxSpeedChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSetBase->GetMaxSpeedAttribute()).AddUObject(this, &AGASPlayerState::MaxSpeedChanged);
 		HealthChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSetBase->GetHealthAttribute()).AddUObject(this, &AGASPlayerState::HealthChanged);
 		MaxHealthChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSetBase->GetMaxHealthAttribute()).AddUObject(this, &AGASPlayerState::MaxHealthChanged);
 		ManaChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSetBase->GetManaAttribute()).AddUObject(this, &AGASPlayerState::ManaChanged);
@@ -80,6 +92,16 @@ void AGASPlayerState::BeginPlay()
 void AGASPlayerState::CharacterLevelChanged(const FOnAttributeChangeData& Data)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Character Level Changed"));
+}
+
+void AGASPlayerState::SpeedChanged(const FOnAttributeChangeData& Data)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Speed Changed OLD: %f, NEW: %f"), Data.OldValue, Data.NewValue);
+}
+
+void AGASPlayerState::MaxSpeedChanged(const FOnAttributeChangeData& Data)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Max Speed Changed OLD: %f, NEW: %f"), Data.OldValue, Data.NewValue);
 }
 
 void AGASPlayerState::HealthChanged(const FOnAttributeChangeData& Data)
