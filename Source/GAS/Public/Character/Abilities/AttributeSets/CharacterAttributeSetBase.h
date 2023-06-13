@@ -28,6 +28,14 @@ public:
 	FGameplayAttributeData Level;
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSetBase, Level)
 
+	UPROPERTY(BlueprintReadOnly, Category = "Speed", ReplicatedUsing = OnRep_Speed)
+	FGameplayAttributeData Speed;
+	ATTRIBUTE_ACCESSORS(UCharacterAttributeSetBase, Speed)
+
+	UPROPERTY(BlueprintReadOnly, Category = "MaxSpeed", ReplicatedUsing = OnRep_MaxSpeed)
+	FGameplayAttributeData MaxSpeed;
+	ATTRIBUTE_ACCESSORS(UCharacterAttributeSetBase, MaxSpeed)
+
 	UPROPERTY(BlueprintReadOnly, Category = "Health", ReplicatedUsing = OnRep_Health)
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSetBase, Health)
@@ -51,6 +59,10 @@ public:
 
 	UFUNCTION()
 	virtual void OnRep_Level(const FGameplayAttributeData& OldLevel);
+	UFUNCTION()
+	virtual void OnRep_Speed(const FGameplayAttributeData& OldSpeed);
+	UFUNCTION()
+	virtual void OnRep_MaxSpeed(const FGameplayAttributeData& OldMaxSpeed);
 	UFUNCTION()
 	virtual void OnRep_Health(const FGameplayAttributeData& OldHealth);
 	UFUNCTION()

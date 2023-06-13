@@ -9,6 +9,16 @@ void UCharacterAttributeSetBase::OnRep_Level(const FGameplayAttributeData& OldLe
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UCharacterAttributeSetBase, Level, OldLevel);
 }
 
+void UCharacterAttributeSetBase::OnRep_Speed(const FGameplayAttributeData& OldSpeed)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UCharacterAttributeSetBase, Speed, OldSpeed);
+}
+
+void UCharacterAttributeSetBase::OnRep_MaxSpeed(const FGameplayAttributeData& OldMaxSpeed)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UCharacterAttributeSetBase, MaxSpeed, OldMaxSpeed);
+}
+
 void UCharacterAttributeSetBase::OnRep_Health(const FGameplayAttributeData& OldHealth)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UCharacterAttributeSetBase, Health, OldHealth);
