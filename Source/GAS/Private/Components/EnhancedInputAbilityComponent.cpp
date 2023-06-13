@@ -118,6 +118,8 @@ void UEnhancedInputAbilityComponent::OnAbilityInputReleased(UInputAction* InputA
 	if (FoundBinding && ensure(FoundBinding->InputID != InvalidInputID))
 	{
 		AbilityLocalInputReleased(FoundBinding->InputID);
+		// For now, send confirm on release
+		LocalInputConfirm();
 	}
 }
 
